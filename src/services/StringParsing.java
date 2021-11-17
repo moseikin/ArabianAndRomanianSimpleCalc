@@ -1,6 +1,7 @@
 package services;
 
 import constants.Constants;
+import constants.ExceptionMessage;
 import interfaces.Calculator;
 import pojo.Arguments;
 
@@ -13,6 +14,7 @@ public class StringParsing {
     private final Pattern arabic = Pattern.compile(Constants.ARABIC_PATTERN);
     private final Pattern romanian = Pattern.compile(Constants.ROMANIAN_PATTERN);
 
+    // соответствует ли введенная строка правилам ввода
     public void input(String data) throws Exception {
         Matcher matcherArabic = arabic.matcher(data);
         Matcher matcherRomanian = romanian.matcher(data);
@@ -21,20 +23,32 @@ public class StringParsing {
         } else if (matcherRomanian.matches()){
             parseRomanianExp(data);
         } else {
-            throw new Exception(Constants.WRONG_PATTERN);
+            throw new Exception(ExceptionMessage.WRONG_PATTERN);
         }
     }
 
+    // из строки вытаскиваем первый и второй аргуметн и помещаем его в pojo
     private void parseArabianExp(String data) throws Exception {
         Arguments arguments = new Arguments();
-        arguments.setFirstArg(Integer.parseInt(extractFirstArgument(data)));
-        arguments.setSecondArg(Integer.parseInt(extractSecondArgument(data)));
+        int firstArg = Integer.parseInt(extractFirstArgument(data));
+        if (firstArg > 10) {
+            throw new Exception(ExceptionMessage.MORE_THAN_TEN);
+        } else {
+            arguments.setFirstArg(firstArg);
+        }
+        int secondArg = Integer.parseInt(extractSecondArgument(data));
+        if (secondArg > 10) {
+            throw new Exception(ExceptionMessage.MORE_THAN_TEN);
+        } else {
+            arguments.setSecondArg(secondArg);
+        }
 
         defineMathAction(data, arguments, Constants.NONE);
     }
 
+    // вытаскиваем из строки первое и второе римские числа ,
+    // передаем их для преобразования в арабские числа
     private void parseRomanianExp(String data) throws Exception {
-
         String firstArgString = extractFirstArgument(data);
         String secondArgString = extractSecondArgument(data);
         Arguments arguments = new Arguments();
@@ -44,6 +58,7 @@ public class StringParsing {
         defineMathAction(data, arguments, Constants.POSITIVE);
     }
 
+    // определяем математическое действие и передаем данные в калькулятор
     private void defineMathAction(String data, Arguments arguments, String flag) throws Exception {
         int result = 0;
         for (int i = 0; i < data.length(); i++) {
@@ -71,10 +86,11 @@ public class StringParsing {
         return data.substring(index + 1);
     }
 
+    // вывод результата на печать в соответствии с флагом: римское число >= 1
     private void output(int result, String flag) throws Exception {
         if (flag.equals(Constants.POSITIVE)) {
             if (result < 1) {
-                throw new Exception(Constants.NOT_NATURAL_NUMBER);
+                throw new Exception(ExceptionMessage.NOT_NATURAL_NUMBER);
             }
             String resultString = converter.toRomanian(result);
             System.out.println(Constants.RESULT + resultString);
