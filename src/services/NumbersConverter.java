@@ -45,10 +45,12 @@ public class NumbersConverter {
         }
     }
 
+    // первым знаком может быть I, V или X (Если Х, то позже выбросим исключение, что число больше 10)
+    // по правилам, вычитать можно либо 1 либо число кратное 10
     private void checkFirstDigit() throws Exception {
         if (ints[0] == 1 && ints[1] != 1) {
             ints[0] = Math.negateExact(ints[0]);
-        } else if (ints[0] == 5 && ints[1] == 10) {
+        } else if (ints[0] == 5 && ints[1] > ints[0]) {
             throw new Exception(ExceptionMessage.WRONG_ROMANIAN_FORMAT);
         }
     }
@@ -65,7 +67,7 @@ public class NumbersConverter {
         }
     }
 
-    // в соответствии со статьей
+    // преобразование выполнено в соответствии со статьей
     // https://ru.wikipedia.org/wiki/%D0%A0%D0%B8%D0%BC%D1%81%D0%BA%D0%B8%D0%B5_%D1%86%D0%B8%D1%84%D1%80%D1%8B
     public String toRomanian(int result) {
         int digits = (int) (Math.log10(result) + 1);
@@ -81,6 +83,7 @@ public class NumbersConverter {
         return resultString;
     }
 
+    // преобразование двузначного числа
     private String twoDigitsToRomanian(int result) {
         StringBuilder resultString = new StringBuilder();
 
@@ -105,6 +108,7 @@ public class NumbersConverter {
         return String.valueOf(resultString);
     }
 
+    // преобразование однозначного числа
     private String oneDigitToRomanian(int result) {
         StringBuilder resultString = new StringBuilder();
         if (result == 9) {
